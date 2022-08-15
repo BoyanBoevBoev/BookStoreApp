@@ -28,12 +28,12 @@ public class BookStoreService  {
         return authorRepository;
     }
 
-    public void addAuthor(List<String> data){
-        authorRepository.addNewAuthor(AuthorMapper.toEntity(data));
+    public Author addAuthor(List<String> data){
+       return authorRepository.addNewAuthor(AuthorMapper.toEntity(data));
     }
 
-    public void addBook(List<String> data){
-        bookRepository.addNewBook(BookMapper.toEntity(data));
+    public Book addBook(List<String> data){
+      return   bookRepository.addNewBook(BookMapper.toEntity(data));
     }
 
     public Collection<Author> getAllAuthors() {
@@ -44,13 +44,19 @@ public class BookStoreService  {
             return bookRepository.getBookCollection();
         }
 
-    public Book getBookById(int id) {
+    public Book getBookById(int id) throws BookStoreException {
        return this.bookRepository.getBookCollection().stream()
                 .filter(book -> book.getId() == id)
                .findFirst().orElseThrow(() -> new BookStoreException(ExceptionMessage.BOOK_DOES_NOT_EXIST));
 //        return this.bookRepository.getBookCollection().stream()
-//               .filter(book -> book.getId() == id)
+//              .filter(book -> book.getId() == id)
 //               .findFirst().orElse(null);
+    }
+
+    public Author getAuthorById(int id) throws BookStoreException{
+        return this.authorRepository.getAuthorCollection().stream()
+                .filter(author -> author.getId() == id)
+                .findFirst().orElseThrow(() -> new BookStoreException(ExceptionMessage.AUTHOR_DOES_NOT_EXIST));
     }
 
     public List<Book> getAllBooksByAuthor(int authorId){
@@ -68,6 +74,7 @@ public class BookStoreService  {
             }
             return bookStringMap;
         }
+
 
 
     }

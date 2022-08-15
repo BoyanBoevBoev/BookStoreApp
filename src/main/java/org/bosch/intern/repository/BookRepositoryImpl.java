@@ -23,15 +23,14 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
-    public void addNewBook(Book book) {
+    public Book addNewBook(Book book) {
         try (Writer writer = new Writer(FILE_NAME_BOOK)) {
             if (isSuccessful(book)) {
                 bookCollection.add(book);
-                System.out.printf((ConstantMessages.SUCCESSFULLY_CREATED_BOOK) + "%n", book.getName());
                 writer.write(BookMapper.toList(book));
-//                writer.write(book,BookMapper.toList());
-            } else {
-                System.out.printf(ExceptionMessage.BOOK_ALREADY_EXISTS + "%n", book.getName());
+                return book;
+            }else {
+                throw new BookStoreException(ExceptionMessage.BOOK_ALREADY_EXISTS);
             }
         } catch (IOException e) {
             throw new BookStoreException("File not found.");
@@ -42,11 +41,13 @@ public class BookRepositoryImpl implements BookRepository {
     public Collection<Book> getBookCollection() {
         try (Reader reader = new Reader(FILE_NAME_BOOK)) {
             List<String> bookData = reader.read();
-            while (bookData != null) {
-                Book book = new Book(Integer.parseInt(bookData.get(0)), bookData.get(1), Integer.parseInt(bookData.get(2)),
-                        bookData.get(3), Integer.parseInt(bookData.get(4)), Double.parseDouble(bookData.get(5)));
-                bookCollection.add(book);
-                bookData = reader.read();
+            if (bookCollection.isEmpty()) {
+                while (bookData != null) {
+                    Book book = new Book(Integer.parseInt(bookData.get(0)), bookData.get(1), Integer.parseInt(bookData.get(2)),
+                            bookData.get(3), Integer.parseInt(bookData.get(4)), Double.parseDouble(bookData.get(5)));
+                    bookCollection.add(book);
+                    bookData = reader.read();
+                }
             }
             return this.bookCollection;
         } catch (IOException e) {
@@ -68,8 +69,9 @@ public class BookRepositoryImpl implements BookRepository {
             }
             return true;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new BookStoreException("Invalid file name");
         }
 
     }
+
 }

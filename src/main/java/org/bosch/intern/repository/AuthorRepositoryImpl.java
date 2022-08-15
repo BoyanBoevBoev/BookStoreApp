@@ -1,12 +1,10 @@
 package org.bosch.intern.repository;
 
 import org.bosch.intern.entity.Author;
-import org.bosch.intern.entity.Book;
 import org.bosch.intern.exception.BookStoreException;
 import org.bosch.intern.io.Reader;
 import org.bosch.intern.io.Writer;
 import org.bosch.intern.util.AuthorMapper;
-import org.bosch.intern.util.ConstantMessages;
 import org.bosch.intern.util.ExceptionMessage;
 
 import java.io.IOException;
@@ -23,17 +21,16 @@ public class AuthorRepositoryImpl implements AuthorRepository {
     }
 
     @Override
-    public void addNewAuthor(Author author) {
+    public Author addNewAuthor(Author author) {
         try (Writer writer = new Writer(FILE_NAME_AUTHOR)) {
             if (isSuccessful(author)) {
                 authorCollection.add(author);
-                System.out.printf((ConstantMessages.SUCCESSFULLY_CREATED_AUTHOR) + "%n", author.getName());
-             writer.write(AuthorMapper.toList(author));
-//                writer.write(author, AuthorMapper.toList());
+                writer.write(AuthorMapper.toList(author));
+                return author;
             } else {
-                System.out.printf(ExceptionMessage.AUTHOR_ALREADY_EXISTS + "%n", author.getName());
+                throw new BookStoreException(ExceptionMessage.AUTHOR_ALREADY_EXISTS);
             }
-        } catch (RuntimeException | IOException e) {
+        } catch (IOException e) {
             throw new BookStoreException("File not found.");
         }
 
@@ -43,10 +40,12 @@ public class AuthorRepositoryImpl implements AuthorRepository {
     public Collection<Author> getAuthorCollection() {
         try (Reader reader = new Reader(FILE_NAME_AUTHOR)) {
             List<String> authorData = reader.read();
-            while (authorData != null) {
-                Author author = new Author(Integer.parseInt(authorData.get(0)), authorData.get(1), authorData.get(2));
-                authorCollection.add(author);
-                authorData = reader.read();
+            if (authorCollection.isEmpty()) {
+                while (authorData != null) {
+                    Author author = new Author(Integer.parseInt(authorData.get(0)), authorData.get(1), authorData.get(2));
+                    authorCollection.add(author);
+                    authorData = reader.read();
+                }
             }
             return this.authorCollection;
 

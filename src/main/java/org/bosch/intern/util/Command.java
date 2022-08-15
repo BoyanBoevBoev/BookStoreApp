@@ -5,11 +5,6 @@ public enum Command {
     READ,
     READALL,
     ADD,
-    AddBook,
-    GetAllBooksAndAuthors,
-    GetBookById,
-    GetAllAuthors,
-    GetAllBooks,
-    GetAllBooksByAuthor,
+
     Exit
 }

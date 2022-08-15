@@ -17,6 +17,9 @@ public class ClientRequest {
         this.method = Command.valueOf(method);
         this.entityParam = Entity.valueOf(entityParam);
     }
+    public ClientRequest(){
+
+    }
 
     public Command getMethod() {
         return method;

@@ -28,7 +28,6 @@ public class Server implements Closeable {
         }
     }
 
-
 //    public void sendMessage(List<String> response) {
 //        printWriter.println(response);
 //        printWriter.flush();
@@ -40,8 +39,7 @@ public class Server implements Closeable {
         }
 
     public String readMessage() throws IOException {
-        String currentLine = bufferedReader.readLine();
-        return currentLine;
+        return bufferedReader.readLine();
     }
     public ClientRequest readRequest() throws IOException {
         String command = readMessage();
@@ -82,6 +80,15 @@ public class Server implements Closeable {
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    public void sendResponse(List<String> responses) {
+        //Result amount
+        this.sendMessage(Integer.toString(responses.size()));
+
+        for (String response : responses) {
+            this.sendMessage(response);
         }
     }
 }

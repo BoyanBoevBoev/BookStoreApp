@@ -5,6 +5,6 @@ import org.bosch.intern.entity.Book;
 import java.util.Collection;
 
 public interface BookRepository {
-    void addNewBook(Book book);
+    Book addNewBook(Book book);
     Collection<Book> getBookCollection();
 }

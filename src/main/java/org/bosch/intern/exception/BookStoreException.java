@@ -7,4 +7,8 @@ public class BookStoreException extends RuntimeException {
     public BookStoreException(String errorMessage) {
         this.errorMessage = errorMessage;
     }
+
+    public String getErrorMessage() {
+        return this.errorMessage;
+    }
 }

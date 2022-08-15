@@ -13,13 +13,13 @@ public class Writer implements Closeable {
     private PrintWriter printWriter;
 
     public Writer(String fileName) throws IOException {
-            this.printWriter = new PrintWriter(new FileWriter(fileName, true));
+        this.printWriter = new PrintWriter(new FileWriter(fileName, true));
 
     }
 
-   public void write(List<String> csvData) {
-        printWriter.write(String.join(",", csvData));
-       printWriter.flush();
+    public void write(List<String> csvData) {
+        printWriter.println(String.join(",", csvData));
+        printWriter.flush();
     }
 
 //    public <T> void write(T entity, Function<T, List<String>> mapper) {
@@ -30,9 +30,10 @@ public class Writer implements Closeable {
 
     @Override
     public void close() throws IOException {
-        System.out.println("Close stream writer");
-        if (printWriter != null){
+        if (printWriter != null) {
             printWriter.close();
+            System.out.println("Close stream writer");
         }
     }
+
 }
