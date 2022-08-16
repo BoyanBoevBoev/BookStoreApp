@@ -1,5 +1,0 @@
-AddAuthor-2-Ivan Vazov-12.12.1870
-AddBook-5-Ilinden-3-01.01.1894-23-16.00
-GetBookById-1
-GetAllAuthors
-AddAuthor-4-Volen Siderov-12.12.1960
