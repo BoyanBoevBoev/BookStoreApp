@@ -80,7 +80,7 @@ public class EngineImpl {
     }
 
     private List<List<String>> readAllAuthors() {
-        List<Author> authorList = bookStoreService.getAllAuthors().stream().toList();
+        List<Author> authorList = bookStoreService.getAllAuthors().stream().collect(Collectors.toList());
         List<List<String>> authrorListString = new ArrayList<>();
         for (Author author : authorList) {
             authrorListString.add(AuthorMapper.toList(author));
@@ -107,7 +107,7 @@ public class EngineImpl {
     }
 
     private List<String> addBookToOutput(ClientRequest clientRequest) {
-        Book book = bookStoreService.addBook(Arrays.stream(clientRequest.getOptions().split("-")).toList());
+        Book book = bookStoreService.addBook(Arrays.stream(clientRequest.getOptions().split("-")).collect(Collectors.toList()));
         return BookMapper.toList(book);
     }
 
