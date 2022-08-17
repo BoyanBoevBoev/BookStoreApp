@@ -1,5 +1,6 @@
 package org.bosch.intern.entity;
 
+import org.bosch.intern.exception.BookStoreException;
 import org.bosch.intern.util.ConstantMessages;
 
 import java.util.Date;
@@ -16,11 +17,11 @@ public class Author {
     }
 
     public void setName(String name) {
-        if (name == null || name.trim().isEmpty()){
-            throw new NullPointerException(ConstantMessages.AUTHOR_NAME_NULL_OR_EMPTY);
-        }else {
-            this.name = name;
+        if (name == null || name.trim().isEmpty()) {
+            throw new BookStoreException(ConstantMessages.AUTHOR_NAME_NULL_OR_EMPTY);
         }
+        this.name = name;
+
 
     }
 

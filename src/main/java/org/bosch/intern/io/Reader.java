@@ -1,12 +1,13 @@
 package org.bosch.intern.io;
+
+import org.bosch.intern.util.ConstantMessages;
+
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 
 public class Reader implements Closeable {
     private BufferedReader bufferedReader;
-
-
     public Reader(String fileName) throws FileNotFoundException {
         this.bufferedReader = new BufferedReader(new FileReader(fileName));
     }
@@ -18,11 +19,11 @@ public class Reader implements Closeable {
             stringList = Arrays.stream(currentLine.split(",")).toList();
         }
         return stringList;
-
     }
+
     @Override
     public void close() throws IOException {
-        System.out.println("Close stream reader");
+        System.out.println(ConstantMessages.CLOSE_READER);
         if (bufferedReader != null) {
             bufferedReader.close();
         }

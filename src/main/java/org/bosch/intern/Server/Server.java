@@ -2,6 +2,8 @@ package org.bosch.intern.Server;
 
 import org.bosch.intern.core.ClientRequest;
 import org.bosch.intern.exception.BookStoreException;
+import org.bosch.intern.util.ConstantMessages;
+import org.bosch.intern.util.ExceptionMessage;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -13,6 +15,8 @@ public class Server implements Closeable {
     private ServerSocket serverSocket;
     private BufferedReader bufferedReader;
     private PrintWriter printWriter;
+    private static final String READ = "read";
+    private static final String ADD = "add";
 
     public void starServer(int portNumber) {
         System.out.println("Starting server");
@@ -28,68 +32,69 @@ public class Server implements Closeable {
         }
     }
 
-//    public void sendMessage(List<String> response) {
-//        printWriter.println(response);
-//        printWriter.flush();
-//    }
+    private void sendMessage(String response) {
+        printWriter.println(response);
+        printWriter.flush();
+    }
 
-        public void sendMessage(String response){
-            printWriter.println(response);
-            printWriter.flush();
-        }
-
-    public String readMessage() throws IOException {
+    private String readMessage() throws IOException {
         return bufferedReader.readLine();
     }
+
     public ClientRequest readRequest() throws IOException {
         String command = readMessage();
         String entity = readMessage();
-        if (command.equalsIgnoreCase("read") || command.equalsIgnoreCase("add")){
+        if (command.equalsIgnoreCase(READ) || command.equalsIgnoreCase(ADD)) {
             String parameters = readMessage();
-            return new ClientRequest(command,entity,parameters);
+            return new ClientRequest(command, entity, parameters);
         }
-        return new ClientRequest(command,entity);
+        return new ClientRequest(command, entity);
+    }
+
+    public void sendResponseError(List<String> responses) {
+        this.sendMessage(Integer.toString(responses.size()));
+        for (String response : responses) {
+            this.sendMessage(response);
+        }
+    }
+
+    public void sendResponse(List<List<String>> responses) {
+        this.sendMessage(Integer.toString(responses.size()));
+        for (List<String> currentLine : responses) {
+            this.sendMessage(String.join(" ", currentLine));
+
+        }
     }
 
     @Override
-    public void close()  {
+    public void close() {
         try {
-            if (serverSocket != null){
+            if (serverSocket != null) {
                 serverSocket.close();
             }
-            System.out.println("ServerSocket closed.");
+            System.out.println(ConstantMessages.CLOSE_SERVER_SOCKET);
         } catch (IOException e) {
-            throw new BookStoreException("Error with the ServerSocket");
+            throw new BookStoreException(ExceptionMessage.ERROR_SERVER_SOCKET);
         }
         try {
-            if (socket != null){
+            if (socket != null) {
                 socket.close();
             }
-            System.out.println("Socket closed.");
+            System.out.println(ConstantMessages.CLOSE_SOCKET);
         } catch (IOException e) {
-            throw new BookStoreException("Error with the Socket");
+            throw new BookStoreException(ExceptionMessage.ERROR_SOCKET);
         }
         if (printWriter != null) {
             printWriter.close();
-            System.out.println("PrintWriter closed.");
+            System.out.println(ConstantMessages.CLOSE_WRITER);
         }
         try {
             if (bufferedReader != null) {
                 bufferedReader.close();
-                System.out.println("BufferedReader closed.");
+                System.out.println(ConstantMessages.CLOSE_WRITER);
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
-
-    public void sendResponse(List<String> responses) {
-        //Result amount
-        this.sendMessage(Integer.toString(responses.size()));
-
-        for (String response : responses) {
-            this.sendMessage(response);
-        }
-    }
 }
-

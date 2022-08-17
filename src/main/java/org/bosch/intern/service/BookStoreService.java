@@ -11,11 +11,9 @@ import org.bosch.intern.util.AuthorMapper;
 import org.bosch.intern.util.BookMapper;
 import org.bosch.intern.util.ExceptionMessage;
 
-import java.security.PublicKey;
 import java.util.*;
-import java.util.stream.Collectors;
 
-public class BookStoreService  {
+public class BookStoreService {
     private AuthorRepository authorRepository;
     private BookRepository bookRepository;
 
@@ -28,53 +26,31 @@ public class BookStoreService  {
         return authorRepository;
     }
 
-    public Author addAuthor(List<String> data){
-       return authorRepository.addNewAuthor(AuthorMapper.toEntity(data));
+    public Author addAuthor(List<String> data) {
+        return authorRepository.addNewAuthor(AuthorMapper.toEntity(data));
     }
 
-    public Book addBook(List<String> data){
-      return   bookRepository.addNewBook(BookMapper.toEntity(data));
+    public Book addBook(List<String> data) {
+        return bookRepository.addNewBook(BookMapper.toEntity(data));
     }
 
     public Collection<Author> getAllAuthors() {
         return authorRepository.getAuthorCollection();
     }
 
-        public Collection<Book> getAllBooks () {
-            return bookRepository.getBookCollection();
-        }
-
-    public Book getBookById(int id) throws BookStoreException {
-       return this.bookRepository.getBookCollection().stream()
-                .filter(book -> book.getId() == id)
-               .findFirst().orElseThrow(() -> new BookStoreException(ExceptionMessage.BOOK_DOES_NOT_EXIST));
-//        return this.bookRepository.getBookCollection().stream()
-//              .filter(book -> book.getId() == id)
-//               .findFirst().orElse(null);
+    public Collection<Book> getAllBooks() {
+        return bookRepository.getBookCollection();
     }
 
-    public Author getAuthorById(int id) throws BookStoreException{
+    public Book getBookById(int id) throws BookStoreException {
+        return this.bookRepository.getBookCollection().stream()
+                .filter(book -> book.getId() == id)
+                .findFirst().orElseThrow(() -> new BookStoreException(ExceptionMessage.BOOK_DOES_NOT_EXIST));
+    }
+
+    public Author getAuthorById(int id) throws BookStoreException {
         return this.authorRepository.getAuthorCollection().stream()
                 .filter(author -> author.getId() == id)
                 .findFirst().orElseThrow(() -> new BookStoreException(ExceptionMessage.AUTHOR_DOES_NOT_EXIST));
     }
-
-    public List<Book> getAllBooksByAuthor(int authorId){
-        return bookRepository.getBookCollection().stream().filter(
-                    book -> book.getAuthor_id() == authorId).collect(Collectors.toList());
-    }
-
-        public Map<Book, Author> getAllBooksAndAuthors () {
-            Map<Book, Author> bookStringMap = new HashMap<>();
-            Collection<Book> currentCollection = bookRepository.getBookCollection();
-            for (Book book : currentCollection) {
-                int currentId = book.getAuthor_id();
-                bookStringMap.putIfAbsent(book, authorRepository.getAuthorCollection().stream().filter(author -> author.getId()
-                        == currentId).findFirst().orElse(null));
-            }
-            return bookStringMap;
-        }
-
-
-
-    }
+}

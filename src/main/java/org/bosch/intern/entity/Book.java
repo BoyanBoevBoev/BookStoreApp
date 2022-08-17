@@ -21,11 +21,11 @@ public class Book {
     }
 
     public void setName(String name) {
-        if (name == null || name.trim().isEmpty()){
+        if (name == null || name.trim().isEmpty()) {
             throw new BookStoreException(ConstantMessages.BOOK_NAME_NULL_OR_EMPTY);
-        }else {
-            this.name = name;
         }
+        this.name = name;
+
     }
 
     public int getId() {

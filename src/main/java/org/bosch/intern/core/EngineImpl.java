@@ -7,132 +7,134 @@ import org.bosch.intern.exception.BookStoreException;
 import org.bosch.intern.service.BookStoreService;
 import org.bosch.intern.util.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EngineImpl {
     private BookStoreService bookStoreService;
-    private static final String EXIT  = "You exit the program.";
+    private static final String EXIT = "You exit the program.";
 
-    public void run2() {
+    public void run() {
         bookStoreService = new BookStoreService();
         boolean exitCommand = false;
         try (Server server = new Server()) {
             server.starServer(6999);
             while (true) {
                 try {
-                    List<String> response = new ArrayList<>();
+                    List<List<String>> response = new ArrayList<>();
                     ClientRequest clientRequest = server.readRequest();
                     switch (clientRequest.getMethod()) {
                         case READ:
-                            response = readEntity(server, clientRequest);
+                            response.add(readEntity(clientRequest));
                             break;
                         case ADD:
-                            response = addEntity(server, clientRequest);
+                            response.add(addEntity(clientRequest));
                             break;
                         case READALL:
-                            response = readAllEntity(server, clientRequest);
+                            response = readAllEntity(clientRequest);
                             break;
                         case Exit:
                             exitCommand = true;
-                            response.add(EXIT);
                             break;
                         default:
-                            response.add("Invalid Command");
+                            List<String> defaultList = new ArrayList<>();
+                            defaultList.add(ConstantMessages.INVALID_COMMAND);
+                            response.add(defaultList);
                     }
                     server.sendResponse(response);
                     if (exitCommand) {
                         break;
                     }
                 } catch (BookStoreException ex) {
-                    server.sendResponse(Arrays.asList("ERROR", ex.getErrorMessage()));
+                    server.sendResponseError(Arrays.asList(ExceptionMessage.ERROR, ex.getErrorMessage()));
+                } catch (Throwable e) {
+                    server.sendResponseError(Arrays.asList(ExceptionMessage.ERROR, ExceptionMessage.ERROR_DEFAULT_MESSAGE));
                 }
             }
-        } catch (IOException e) {
-            throw new RuntimeException();
         }
     }
 
-    private List<String> readAllEntity(Server server, ClientRequest clientRequest) {
-        List<String> output = new ArrayList<>();
+    private List<List<String>> readAllEntity(ClientRequest clientRequest) {
+        List<List<String>> output = new ArrayList<>();
         switch (clientRequest.getEntityParam()) {
             case BOOK:
-                readAllBooks(output);
+                output = readAllBooks();
                 break;
             case AUTHOR:
-                readAllAuthors(output);
+                output = readAllAuthors();
                 break;
         }
         return output;
 
     }
 
-    private void readAllBooks(List<String> output) {
+    private List<List<String>> readAllBooks() {
         List<Book> list = new ArrayList<>(bookStoreService.getAllBooks().stream().toList());
+        List<List<String>> bookListString = new ArrayList<>();
         for (Book book : list) {
-            output.add(String.join(",", BookMapper.toList(book)));
+            bookListString.add(BookMapper.toList(book));
         }
+        return bookListString;
     }
 
-    private void readAllAuthors(List<String> output) {
+    private List<List<String>> readAllAuthors() {
         List<Author> authorList = bookStoreService.getAllAuthors().stream().toList();
+        List<List<String>> authrorListString = new ArrayList<>();
         for (Author author : authorList) {
-            output.add(String.join(",", AuthorMapper.toList(author)));
+            authrorListString.add(AuthorMapper.toList(author));
         }
+        return authrorListString;
     }
 
-    private List<String> addEntity(Server server, ClientRequest clientRequest) {
+    private List<String> addEntity(ClientRequest clientRequest) {
         List<String> output = new ArrayList<>();
         switch (clientRequest.getEntityParam()) {
             case BOOK:
-                addBookToOutput(clientRequest, output);
+                addBookToOutput(clientRequest);
                 break;
             case AUTHOR:
-                addAuthorToOutput(clientRequest, output);
+                addAuthorToOutput(clientRequest);
                 break;
         }
         return output;
     }
 
-    private void addAuthorToOutput(ClientRequest clientRequest, List<String> output) {
-        Author author = bookStoreService.addAuthor(Arrays.stream(clientRequest.getOptions().split("-")).toList());
-        output.add(String.join(",", AuthorMapper.toList(author)));
+    private List<String> addAuthorToOutput(ClientRequest clientRequest) {
+        Author author = bookStoreService.addAuthor(Arrays.stream(clientRequest.getOptions().split("-")).collect(Collectors.toList()));
+        return AuthorMapper.toList(author);
     }
 
-    private void addBookToOutput(ClientRequest clientRequest, List<String> output) {
+    private List<String> addBookToOutput(ClientRequest clientRequest) {
         Book book = bookStoreService.addBook(Arrays.stream(clientRequest.getOptions().split("-")).toList());
-        output.add(String.join(",", BookMapper.toList(book)));
+        return BookMapper.toList(book);
     }
 
-    private List<String> readEntity(Server server, ClientRequest clientRequest) {
+    private List<String> readEntity(ClientRequest clientRequest) {
         List<String> output = new ArrayList<>();
         switch (clientRequest.getEntityParam()) {
             case BOOK:
-                readBook(clientRequest, output);
+                output = readBook(clientRequest);
                 break;
             case AUTHOR:
-                readAuthor(clientRequest, output);
+                output = readAuthor(clientRequest);
                 break;
         }
         return output;
     }
 
-    private void readAuthor(ClientRequest clientRequest, List<String> output) {
+    private List<String> readAuthor(ClientRequest clientRequest) {
         Author author = bookStoreService.getAuthorById(Integer.parseInt(clientRequest.getOptions()));
-        output.add(String.join(",", AuthorMapper.toList(author)));
+        return AuthorMapper.toList(author);
     }
 
-    private void readBook(ClientRequest clientRequest, List<String> output) {
+    private List<String> readBook(ClientRequest clientRequest) {
         Book book = bookStoreService.getBookById(Integer.parseInt(clientRequest.getOptions()));
-        output.add(String.join(",", BookMapper.toList(book)));
+        return BookMapper.toList(book);
     }
-
-    private void getAll() {
-        bookStoreService.getAllBooksAndAuthors().forEach((key, value) -> System.out.printf("Book name - %s," +
-                        "Published - %s, Price - %.2f, Author name - %s%n", key.getName(),
-                key.getDate(), key.getPrice(), value.getName()));
-    }
-
 }
+
+
+
+

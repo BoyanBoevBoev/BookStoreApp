@@ -1,14 +1,9 @@
 package org.bosch.intern.util;
 
-import org.bosch.intern.entity.Author;
 import org.bosch.intern.entity.Book;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
-
 
 public class BookMapper {
 
@@ -22,8 +17,4 @@ public class BookMapper {
                 String.valueOf(book.getPrice()));
     }
 
-//    public static Function<Book, List<String>> toList() {
-//        Function<Book, List<String>> func = entity -> Arrays.asList(String.valueOf(entity.getId()),entity.getName(),entity.getDate());
-//        return func;
-//    }
 }

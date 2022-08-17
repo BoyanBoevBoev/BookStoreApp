@@ -5,6 +5,5 @@ public enum Command {
     READ,
     READALL,
     ADD,
-
     Exit
 }

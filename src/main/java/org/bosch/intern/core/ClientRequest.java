@@ -9,7 +9,7 @@ public class ClientRequest {
     private String options;
 
     public ClientRequest(String method, String entityParam, String options) {
-        this(method,entityParam);
+        this(method, entityParam);
         this.options = options;
     }
 
@@ -17,7 +17,8 @@ public class ClientRequest {
         this.method = Command.valueOf(method);
         this.entityParam = Entity.valueOf(entityParam);
     }
-    public ClientRequest(){
+
+    public ClientRequest() {
 
     }
 
